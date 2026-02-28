@@ -11,7 +11,7 @@ const todoList = {
 
 function Todo() {
   // TODO: Reuse the Home component to render the list view
-  return <h1>This is the Todo page!</h1>;
+  return <h1>This is the Todo page! NEW CHANGE </h1>;
 }
 
 export default Todo;
