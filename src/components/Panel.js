@@ -22,7 +22,7 @@ function Panel({campus_events, selectedEvent, setSelectedEvent, setRouteEvent}) 
       }}>
 
         <h1> Campus Events </h1>
-        <h2> (March 1 - 8) </h2>    
+        {/* <h3> (March 1 - 8) </h3>     */}
 
         <div className="events_list mt-3">
         {Object.values(campus_events).map(event => (
@@ -32,7 +32,7 @@ function Panel({campus_events, selectedEvent, setSelectedEvent, setRouteEvent}) 
             style={{ cursor: "pointer" }}
             onClick={() => setSelectedEvent(event)}
           >
-            <div className="card-body">
+            <div className="card-body outline-0">
               {event.name}
             </div>
           </div>
@@ -43,11 +43,15 @@ function Panel({campus_events, selectedEvent, setSelectedEvent, setRouteEvent}) 
           <div className="selectedEvent text-center"> 
           <div className="card border-secondary">
             <div className="card-body">
-              <h5>Selected Event:</h5>
-              {selectedEvent.name}
+              <h5><b>{selectedEvent.name}</b></h5>
+              <h6><span className="badge bg-dark">{selectedEvent.class}</span></h6>
+
+              {selectedEvent.date} <br></br> 
+              {selectedEvent.place} <br></br> 
+              {selectedEvent.time}
             </div>
           </div>
-            <button className="btn btn-primary mt-3"
+            <button className="btn btn-secondary mt-3"
                     onClick={() => setRouteEvent(selectedEvent)}>Show Route</button>
           </div>
           
