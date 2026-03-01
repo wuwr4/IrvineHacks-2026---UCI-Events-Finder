@@ -48,3 +48,23 @@ span {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.route-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.route-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  margin-left: 10px;
+
+}
+
+.route-text {
+  font-size: 14px;
+  margin: 0;
+  text-decoration: none;
+}

@@ -60,6 +60,9 @@ const handleSignOut = () => {
   });
 };
 
+let distance;
+let duration;
+
 // Used to draw a route from two locations
 /*
 function Routing({ start, end }) {
@@ -101,7 +104,7 @@ function Routing({ start, end }) {
 }
 */
 
-function GoogleRouting({ start, end }) {
+function GoogleRouting({ start, end, setRouteInfo }) {
   const [path, setPath] = useState([]);
   const map = useMap();
 
@@ -123,6 +126,13 @@ function GoogleRouting({ start, end }) {
 
         // Decode the Google encoded polyline into [lat, lng] pairs
         const decodedPath = polyline.decode(result.data.polyline);
+        
+        setRouteInfo({
+          distance: result.data.distance,
+          duration: result.data.duration
+        })
+
+        console.log(distance, duration);
         setPath(decodedPath);
 
         // Optional: Auto-zoom to fit the new route
@@ -149,6 +159,8 @@ function Map() {
 
   const [events, setEvents] = useState([]);
   const [dormLocation, setDormLocation] = useState([]);
+
+  const [routeInfo, setRouteInfo] = useState(null);
 
   // Retrieve the DB
   const db = getFirestore();
@@ -250,6 +262,7 @@ function Map() {
       display: "flex", 
       gap: "10px" 
     }}>
+      
       {/* Sign Out Button - Matches your Sign In/Up button style */}
       <button onClick={handleSignOut}>
         Sign Out
@@ -262,6 +275,7 @@ function Map() {
 
         center={center_location} 
         zoom={16.5} 
+        zoomControl={false}
         style={{ width: "100%", height: "100%" }}
       >
           
@@ -296,7 +310,27 @@ function Map() {
                 <h5 className="card-title">{location.name}</h5>
                 <h6 className="card-subtitle mb-2 text-secondary">{location.date} - {location.place}</h6>
                 <p className="card-text">{location.description}</p>
-                <a href={location.link} target="_blank" className="card-link">Learn more</a>
+
+                  {/* Displays the route time and distance if the event is selected */}
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    <a 
+                      href={location.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="card-link"
+                    >
+                      Learn more
+                    </a>
+
+                      {routeEvent?.name === location.name && routeInfo && (
+                      <div className="route-info">
+                        <img className="route-icon" src="walking.png"></img>
+                        <span className="route-text"> {routeInfo.distance} </span>
+                        <img className="route-icon" src="time.png"></img>
+                        <span className="route-text"> {routeInfo.duration} </span>
+                      </div>
+                      )}
+                    </div>
               </div>
             </div>
             </Popup>
@@ -307,6 +341,7 @@ function Map() {
         <GoogleRouting
           start={[dormLocation.lat, dormLocation.lng]}
           end={[routeEvent.lat, routeEvent.lon]}
+          setRouteInfo={setRouteInfo}
         />
       )}
 
@@ -316,6 +351,20 @@ function Map() {
              selectedEvent={selectedEvent} 
              setSelectedEvent={setSelectedEvent}
              setRouteEvent={setRouteEvent}/>
+
+      <h1
+  style={{
+    position: "absolute",
+    bottom: "20px",
+    left: "20px",
+    margin: 0,
+    zIndex: 1000,
+    color: "black"
+  }}
+>
+  <b>AntEvents</b>
+</h1>
+
     </div>
   );
 }

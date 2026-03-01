@@ -21,8 +21,7 @@ function Panel({campus_events, selectedEvent, setSelectedEvent, setRouteEvent}) 
         overflowY: "auto"
       }}>
 
-        <h1> Campus Events </h1>
-        {/* <h3> (March 1 - 8) </h3>     */}
+        <h3 className="text-center"> <b> Upcoming Events </b> </h3>
 
         <div className="events_list mt-3">
         {Object.values(campus_events).map(event => (
