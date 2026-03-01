@@ -1,6 +1,6 @@
 
 // Displaying the map
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -11,13 +11,18 @@ import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
 import { getFunctions, httpsCallable} from "firebase/functions";
-import { getFirestore, collection, getDocs, onSnapshot, doc, QuerySnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, onSnapshot, doc, QuerySnapshot, getDoc } from "firebase/firestore";
+import { auth, computeRouteFn } from "../firebase";
 
 // Displaying the side panel
 import Panel from "./Panel";
 
 // Handling clicks
 import { useState } from "react";
+
+import polyline from "@mapbox/polyline";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // Dummy data
 let events = {
@@ -29,7 +34,7 @@ let events = {
 
 const landmarks = {
   park: {name: "Screen on the Green", lat: 33.6461, lon: -117.8427},
-  dorms: {name: "Home", lat: 33.6452401375453, lon: -117.83732909889765}
+  // dorms: {name: "Home", lat: 33.6452401375453, lon: -117.83732909889765}
 };
 
 // Pin icons
@@ -47,7 +52,16 @@ const home_pin = L.icon({
   popupAnchor: [0, -32] 
 });
 
+const handleSignOut = () => {
+  auth.signOut().then(() => {
+    // This is the "Easy" trick: forcing a refresh ensures 
+    // all old map data is cleared and App.js resets to Login
+    window.location.href = "/"; 
+  });
+};
+
 // Used to draw a route from two locations
+/*
 function Routing({ start, end }) {
   const map = useMap();
 
@@ -85,6 +99,48 @@ function Routing({ start, end }) {
 
   return null;
 }
+*/
+
+function GoogleRouting({ start, end }) {
+  const [path, setPath] = useState([]);
+  const map = useMap();
+
+  useEffect(() => {
+    if (!start || !end) return;
+
+    const getRoute = async () => {
+      try {
+        const result = await computeRouteFn({
+          origin: {
+            latitude: start[0],
+            longitude: start[1]
+          },
+          destination:{
+            latitude: end[0],
+            longitude: end[1]
+          }
+        });
+
+        // Decode the Google encoded polyline into [lat, lng] pairs
+        const decodedPath = polyline.decode(result.data.polyline);
+        setPath(decodedPath);
+
+        // Optional: Auto-zoom to fit the new route
+        const bounds = L.latLngBounds(decodedPath);
+        map.fitBounds(bounds);
+        
+      } catch (err) {
+        console.error("Error fetching Google Route:", err);
+      }
+    };
+
+    getRoute();
+  }, [start, end, map]);
+
+  if (path.length === 0) return null;
+
+  return <Polyline positions={path} color="blue" weight={5} opacity={0.7} />;
+}
 
 // Returns the map
 function Map() {
@@ -98,6 +154,26 @@ function Map() {
   const db = getFirestore();
   let event_items = [];
   let dorm = []
+
+  const auth = getAuth();
+  
+  async function getUserDormLoc() {
+    const user = auth.currentUser
+
+    const docRef = doc(db, "users", user.uid)
+    const docSnap = await getDoc(docRef)
+
+    const data = docSnap.data()
+    setDormLocation({ name: data.name, lat: data.lat, lng: data.lng })
+  }
+
+  useEffect(() => {
+      getUserDormLoc();    }, []);
+  
+  //const userSnap = await getDoc(doc(db, "users", "USER_ID"));
+  //const userData = userSnap.data();
+
+  
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -125,6 +201,7 @@ function Map() {
       fetchEvents();
   }, []);
 
+  /*
   useEffect(() => {
     const fetchDorm = async () => {
       const snapshot = await getDocs(collection(db, "users"));
@@ -136,7 +213,7 @@ function Map() {
                          name: user.data().firstName
         };
 
-        console.log(dorm_item);
+        //console.log(dorm_item);
   
           dorm.push(dorm_item);
         });
@@ -146,6 +223,7 @@ function Map() {
 
       fetchDorm();
   }, []);
+  */
 
   // Clear the route whenever a new event is selected
   useEffect(() => {
@@ -153,11 +231,30 @@ function Map() {
   }, [selectedEvent]);
 
   const center_location = [landmarks.park.lat, landmarks.park.lon + 0.0015];
+  console.log(dormLocation.lat)
+  console.log(dormLocation.lng)
 
   return (
+    
 
     // A full screen div that contains the map and sidebar
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      
+      
+      <div style={{ 
+      position: "absolute", 
+      top: 20, 
+      left: 20, 
+      zIndex: 1000, 
+      display: "flex", 
+      gap: "10px" 
+    }}>
+      {/* Sign Out Button - Matches your Sign In/Up button style */}
+      <button onClick={handleSignOut}>
+        Sign Out
+      </button>
+
+    </div>
       
       {/* Displays the map */}
       <MapContainer 
@@ -173,12 +270,12 @@ function Map() {
       />
 
       {/* Displays a pin for the home location */}
-      {dormLocation[0] && (
-        <Marker key={landmarks.dorms.name} position={[dormLocation[0].lat, dormLocation[0].lon]} icon={home_pin}> 
+      {dormLocation.lat && (
+        <Marker key={dormLocation.name} position={[dormLocation.lat, dormLocation.lng]} icon={home_pin}> 
         <Popup>
           <div className="card border-0">
               <div className="card-body">
-                <h5 className="card-title">{dormLocation[0].name}'s Dorm</h5>
+                <h5 className="card-title">{dormLocation.name}'s Dorm</h5>
               </div>
             </div>
           </Popup>
@@ -206,8 +303,8 @@ function Map() {
       ))}
 
       {routeEvent && (
-        <Routing
-          start={[dormLocation[0].lat, dormLocation[0].lon]}
+        <GoogleRouting
+          start={[dormLocation.lat, dormLocation.lng]}
           end={[routeEvent.lat, routeEvent.lon]}
         />
       )}
@@ -223,3 +320,5 @@ function Map() {
 }
 
 export default Map;
+
+

@@ -84,21 +84,31 @@ exports.computeRoute = onCall(
     },
 
     async (request) => {
+        console.log('hello')
+        
         const { origin, destination } = request.data;
         const apiKey = process.env.GOOGLE_ROUTES_KEY
+
+        console.log("API Key present:", !!apiKey);
 
         try {
             const response = await axios.post(
                 "https://routes.googleapis.com/directions/v2:computeRoutes",
                 {
                     origin: {
-                        location: {
-                            latLng: { latitude: origin.lat, longitude: origin.lng }
+                        location: { // <--- Google MANDATES this nest
+                            latLng: { // <--- Google MANDATES this nest
+                                latitude: origin.latitude, 
+                                longitude: origin.longitude 
+                            }
                         }
                     },
                     destination: {
                         location: {
-                            latLng: { latitude: destination.lat, longitude: destination.lng }
+                            latLng: { 
+                                latitude: destination.latitude, 
+                                longitude: destination.longitude 
+                            }
                         }
                     },
                     travelMode: "WALK", // Routes API uses WALK instead of walking
@@ -110,12 +120,13 @@ exports.computeRoute = onCall(
                         "Content-Type": "application/json",
                         "X-Goog-Api-Key": apiKey,
                         // This Field Mask is MANDATORY for the Routes API
-                        "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline"
+                        "X-Goog-FieldMask": "*"
                     }
                 }
             );
 
             const route = response.data.routes[0];
+            console.log(route)
             if (!route) {
                 throw new Error("No route found");
             }
@@ -128,8 +139,12 @@ exports.computeRoute = onCall(
                 polyline: route.polyline.encodedPolyline
             };
         } catch (err) {
-            console.error("Routes API Error:", err.response?.data || err.message);
-            throw new Error("Failed to compute route");
+            if (err.response) {
+                console.error("Google API Rejection:", JSON.stringify(err.response.data));
+            } else {
+                console.error("Function Crash Error:", err.message);
+            }
+            throw new Error("Internal Route Error: " + err.message);
         }
     }
 );

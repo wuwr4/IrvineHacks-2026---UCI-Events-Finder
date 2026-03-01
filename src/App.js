@@ -1,30 +1,29 @@
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+
+import React from "react"
 
 import Login from "./components/Login";
 import Map from "./components/Map";
 
 import "./App.css";
 
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
-  const navigate = useNavigate(); // Initialize the hook
+  // Listen for login/logout
+  React.useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+    });
+  }, []);
 
-  const handleLoginSuccess = () => {
-    // This is the function passed to the Login component
-    navigate("/map"); 
-  };
-  
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        
-        <Route path="/map" element={<Map />} />
-
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+    <div className="App"> {/* <--- Add this className here */}
+      {isLoggedIn ? <Map /> : <Login onLoginSuccess={() => setIsLoggedIn(true)} />}
     </div>
-  ); 
+  );
 }
 
 export default App;

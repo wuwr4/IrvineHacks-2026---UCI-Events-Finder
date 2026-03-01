@@ -99,6 +99,76 @@ export default function Login({ onLoginSuccess }) {
 
   return (
     <div style={{ maxWidth: 400, margin: "50px auto", textAlign: "center" }}>
+      <style>
+    {`
+      @keyframes drift {
+        from { transform: translateX(-30px); }
+        to { transform: translateX(30px); }
+      }
+      @keyframes snoutWave {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(-8deg); }
+      }
+      .cloud-animate {
+        animation: drift 6s ease-in-out infinite alternate;
+      }
+      .peter-snout {
+        animation: snoutWave 2.5s ease-in-out infinite;
+        transform-origin: 25px 35px;
+      }
+    `}
+  </style>
+  <div className="cloud-animate" style={{ position: "absolute", top: "10%", left: "15%", opacity: 0.8 }}>
+    <svg width="400" height="130" viewBox="0 0 24 24" fill="white">
+      <path d="M17.5,19c-3.03,0-5.5-2.47-5.5-5.5c0-0.23,0.02-0.45,0.05-0.67C9.17,12.35,7,10.42,7,8c0-2.21,1.79-4,4-4c0.55,0,1.07,0.11,1.53,0.32C13.4,2.83,15.07,2,17,2c3.31,0,6,2.69,6,6c0,0.34-0.03,0.67-0.08,1C23.59,9.33,24,10.11,24,11c0,1.66-1.34,3-3,3c-0.17,0-0.33-0.02-0.5-0.05C19.95,16.83,17.2,19,17.5,19z" />
+    </svg>
+  </div>
+  <div className="cloud-animate" style={{ position: "absolute", top: "10%", left: "60%", opacity: 0.8 }}>
+    <svg width="200" height="300" viewBox="0 0 24 24" fill="white">
+      <path d="M17.5,19c-3.03,0-5.5-2.47-5.5-5.5c0-0.23,0.02-0.45,0.05-0.67C9.17,12.35,7,10.42,7,8c0-2.21,1.79-4,4-4c0.55,0,1.07,0.11,1.53,0.32C13.4,2.83,15.07,2,17,2c3.31,0,6,2.69,6,6c0,0.34-0.03,0.67-0.08,1C23.59,9.33,24,10.11,24,11c0,1.66-1.34,3-3,3c-0.17,0-0.33-0.02-0.5-0.05C19.95,16.83,17.2,19,17.5,19z" />
+    </svg>
+  </div>
+  <div className="cloud-animate" style={{ position: "absolute", top: "20%", left: "2%", opacity: 0.8 }}>
+    <svg width="400" height="300" viewBox="0 0 24 24" fill="white">
+      <path d="M17.5,19c-3.03,0-5.5-2.47-5.5-5.5c0-0.23,0.02-0.45,0.05-0.67C9.17,12.35,7,10.42,7,8c0-2.21,1.79-4,4-4c0.55,0,1.07,0.11,1.53,0.32C13.4,2.83,15.07,2,17,2c3.31,0,6,2.69,6,6c0,0.34-0.03,0.67-0.08,1C23.59,9.33,24,10.11,24,11c0,1.66-1.34,3-3,3c-0.17,0-0.33-0.02-0.5-0.05C19.95,16.83,17.2,19,17.5,19z" />
+    </svg>
+  </div>
+  <div className="cloud-animate" style={{ position: "absolute", top: "50%", left: "60%", opacity: 0.8 }}>
+    <svg width="500" height="150" viewBox="0 0 24 24" fill="white">
+      <path d="M17.5,19c-3.03,0-5.5-2.47-5.5-5.5c0-0.23,0.02-0.45,0.05-0.67C9.17,12.35,7,10.42,7,8c0-2.21,1.79-4,4-4c0.55,0,1.07,0.11,1.53,0.32C13.4,2.83,15.07,2,17,2c3.31,0,6,2.69,6,6c0,0.34-0.03,0.67-0.08,1C23.59,9.33,24,10.11,24,11c0,1.66-1.34,3-3,3c-0.17,0-0.33-0.02-0.5-0.05C19.95,16.83,17.2,19,17.5,19z" />
+    </svg>
+  </div>
+  <div className="cloud-animate" style={{ position: "absolute", top: "40%", left: "20%", opacity: 0.8 }}>
+    <svg width="210" height="200" viewBox="0 0 24 24" fill="white">
+      <path d="M17.5,19c-3.03,0-5.5-2.47-5.5-5.5c0-0.23,0.02-0.45,0.05-0.67C9.17,12.35,7,10.42,7,8c0-2.21,1.79-4,4-4c0.55,0,1.07,0.11,1.53,0.32C13.4,2.83,15.07,2,17,2c3.31,0,6,2.69,6,6c0,0.34-0.03,0.67-0.08,1C23.59,9.33,24,10.11,24,11c0,1.66-1.34,3-3,3c-0.17,0-0.33-0.02-0.5-0.05C19.95,16.83,17.2,19,17.5,19z" />
+    </svg>
+  </div>
+  <div className="cloud-animate" style={{ position: "absolute", top: "0%", left: "60%", opacity: 0.8 }}>
+    <svg width="400" height="400" viewBox="0 0 24 24" fill="white">
+      <path d="M17.5,19c-3.03,0-5.5-2.47-5.5-5.5c0-0.23,0.02-0.45,0.05-0.67C9.17,12.35,7,10.42,7,8c0-2.21,1.79-4,4-4c0.55,0,1.07,0.11,1.53,0.32C13.4,2.83,15.07,2,17,2c3.31,0,6,2.69,6,6c0,0.34-0.03,0.67-0.08,1C23.59,9.33,24,10.11,24,11c0,1.66-1.34,3-3,3c-0.17,0-0.33-0.02-0.5-0.05C19.95,16.83,17.2,19,17.5,19z" />
+    </svg>
+  </div>
+      <div style={{ marginBottom: "30px" }}>
+      <h1 style={{ 
+        fontSize: "3rem", 
+        fontWeight: "800", 
+        margin: "0", 
+        color: "#333",
+        letterSpacing: "-1px"
+      }}>
+        ANTEvents
+      </h1>
+      <p style={{ 
+        fontSize: "1.1rem", 
+        color: "#555", 
+        lineHeight: "1.5",
+        marginTop: "10px",
+        padding: "0 10px"
+      }}>
+        Welcome to <strong>ANTEvents</strong>, your comprehensive collection of campus life! 
+        Find your community and never miss a beat at UCI.
+      </p>
+    </div>
       <h2>{isSignUp ? "Sign Up" : "Sign In"}</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -127,6 +197,22 @@ export default function Login({ onLoginSuccess }) {
           {isSignUp ? "Sign In" : "Sign Up"}
         </span>
       </p>
+
+    <img 
+  src="images.png" 
+  alt="Peter the Anteater"
+  className="peter-animate"
+  style={{ 
+    position: "absolute", 
+    bottom: "15px", 
+    left: "1%", 
+    width: "auto", // Adjust based on your image size
+    height: "550px",
+    zIndex: 5,
+    mixBlendMode: "multiply"
+  }} 
+/>
+      
     </div>
   );
 }
