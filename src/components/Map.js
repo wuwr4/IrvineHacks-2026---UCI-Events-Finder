@@ -1,6 +1,6 @@
 
 // Displaying the map
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -10,11 +10,15 @@ import { useMap } from "react-leaflet";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
+import { auth, computeRouteFn } from "../firebase";
+
 // Displaying the side panel
 import Panel from "./Panel";
 
 // Handling clicks
 import { useState } from "react";
+
+import polyline from "@mapbox/polyline";
 
 // Dummy data
 const events = {
@@ -44,7 +48,16 @@ const home_pin = L.icon({
   popupAnchor: [0, -32] 
 });
 
+const handleSignOut = () => {
+  auth.signOut().then(() => {
+    // This is the "Easy" trick: forcing a refresh ensures 
+    // all old map data is cleared and App.js resets to Login
+    window.location.href = "/"; 
+  });
+};
+
 // Used to draw a route from two locations
+/*
 function Routing({ start, end }) {
   const map = useMap();
 
@@ -80,6 +93,48 @@ function Routing({ start, end }) {
 
   return null;
 }
+*/
+
+function GoogleRouting({ start, end }) {
+  const [path, setPath] = useState([]);
+  const map = useMap();
+
+  useEffect(() => {
+    if (!start || !end) return;
+
+    const getRoute = async () => {
+      try {
+        const result = await computeRouteFn({
+          origin: {
+            latitude: start[0],
+            longitude: start[1]
+          },
+          destination:{
+            latitude: end[0],
+            longitude: end[1]
+          }
+        });
+
+        // Decode the Google encoded polyline into [lat, lng] pairs
+        const decodedPath = polyline.decode(result.data.polyline);
+        setPath(decodedPath);
+
+        // Optional: Auto-zoom to fit the new route
+        const bounds = L.latLngBounds(decodedPath);
+        map.fitBounds(bounds);
+        
+      } catch (err) {
+        console.error("Error fetching Google Route:", err);
+      }
+    };
+
+    getRoute();
+  }, [start, end, map]);
+
+  if (path.length === 0) return null;
+
+  return <Polyline positions={path} color="blue" weight={5} opacity={0.7} />;
+}
 
 // Returns the map
 function Map() {
@@ -94,9 +149,26 @@ function Map() {
   const center_location = [landmarks.park.lat, landmarks.park.lon + 0.0015];
 
   return (
+    
 
     // A full screen div that contains the map and sidebar
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      
+      
+      <div style={{ 
+      position: "absolute", 
+      top: 20, 
+      left: 20, 
+      zIndex: 1000, 
+      display: "flex", 
+      gap: "10px" 
+    }}>
+      {/* Sign Out Button - Matches your Sign In/Up button style */}
+      <button onClick={handleSignOut}>
+        Sign Out
+      </button>
+
+    </div>
       
       {/* Displays the map */}
       <MapContainer 
@@ -128,7 +200,7 @@ function Map() {
       ))}
 
       {routeEvent && (
-        <Routing
+        <GoogleRouting
           start={[landmarks.dorms.lat, landmarks.dorms.lon]}
           end={[routeEvent.lat, routeEvent.lon]}
         />
@@ -145,3 +217,5 @@ function Map() {
 }
 
 export default Map;
+
+
