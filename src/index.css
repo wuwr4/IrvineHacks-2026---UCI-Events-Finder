@@ -3,7 +3,7 @@
 
 body {
   margin: 0;
-  /* TODO: Change the background color to a gradient */
-  background: blue;
+  background: linear-gradient(135deg, #6dd5fa, #ffffff);
+  font-family: 'Poppins', sans-serif;
   overflow-x: hidden;
 }
