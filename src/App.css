@@ -8,6 +8,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.leaflet-routing-container {
+  display: none !important;
+}
+
 input {
   display: block;
   margin: 10px auto;

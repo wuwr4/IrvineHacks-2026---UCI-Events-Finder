@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { auth, db, verifyDormFn } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { query, collection, doc, where, setDoc, getDocs } from "firebase/firestore";
 
 export default function Login({ onLoginSuccess }) {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -37,9 +37,12 @@ export default function Login({ onLoginSuccess }) {
 
     try {
       // Check if email already exists in Firestore
-      const userDoc = await getDoc(doc(db, "users", email));
-      if (userDoc.exists()) {
-        setError("Email already exists");
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q)
+
+      if (!querySnapshot.empty) {
+        setError("Email already exists. Try signing in by clicking below.");
         return;
       }
 
@@ -70,7 +73,7 @@ export default function Login({ onLoginSuccess }) {
       if (err.message.includes("Melissa")) {
         setError("Dorm address could not be verified. Please check your input.");
       } else {
-        setError(err.message || "Failed to sign up");
+        setError(err.message || "Email or Password is incorrect.");
       }
     }
   };
@@ -90,7 +93,7 @@ export default function Login({ onLoginSuccess }) {
       onLoginSuccess();
     } catch (err) {
       console.error(err);
-      setError("Failed to sign in");
+      setError("Email or password is incorrect.");
     }
   };
 
