@@ -126,8 +126,8 @@ function GoogleRouting({ start, end }) {
         setPath(decodedPath);
 
         // Optional: Auto-zoom to fit the new route
-        const bounds = L.latLngBounds(decodedPath);
-        map.fitBounds(bounds);
+        //const bounds = L.latLngBounds(decodedPath);
+        //map.fitBounds(bounds);
         
       } catch (err) {
         console.error("Error fetching Google Route:", err);
@@ -164,7 +164,7 @@ function Map() {
     const docSnap = await getDoc(docRef)
 
     const data = docSnap.data()
-    setDormLocation({ name: data.name, lat: data.lat, lng: data.lng })
+    setDormLocation({ name: data.firstName, lat: data.lat, lng: data.lng })
   }
 
   useEffect(() => {
@@ -233,6 +233,7 @@ function Map() {
   const center_location = [landmarks.park.lat, landmarks.park.lon + 0.0015];
   console.log(dormLocation.lat)
   console.log(dormLocation.lng)
+  console.log(dormLocation.name)
 
   return (
     
