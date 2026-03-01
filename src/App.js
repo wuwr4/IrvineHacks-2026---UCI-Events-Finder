@@ -1,6 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 
-import Todo from "./pages/Todo";
+import Map from "./components/Map";
 
 import "./App.css";
 
@@ -15,13 +15,16 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Todo />} />
-        <Route path="/todo" element={<Todo />} />
-        {/**TODO: Add route to Grocery page here*/}
+
+        {/* Navigates to the Map page ig not given a URI */}
+        <Route path="/" element={<Map />} />
+
+        {/* Navigates to the home page if given an unknown URI */}
         <Route path="*" element={<Navigate to="/" />} />
+
       </Routes>
     </div>
-  );
+  ); 
 }
 
 export default App;

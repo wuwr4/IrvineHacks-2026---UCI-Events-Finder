@@ -4,6 +4,7 @@
 body {
   margin: 0;
   /* TODO: Change the background color to a gradient */
-  background: blue;
+  background: #99ccff;
   overflow-x: hidden;
+  font-family: 'Poppins'
 }

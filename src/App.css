@@ -3,3 +3,8 @@
   width: 100vw;
   display: flex;
 }
+
+.leaflet-routing-container {
+  display: none !important;
+}
+
